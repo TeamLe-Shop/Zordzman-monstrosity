@@ -1297,6 +1297,34 @@ namespace zm {
 	typedef Vector<3,float>		Vector3F;
 	typedef Vector<3,double>	Vector3D;
 
+	/*	class Vector<4,type> :
+	 *
+	 *		Specialized class template for 4 elements per vector.
+	 */
+	template < typename type > class Vector < 4, type, void > {
+
+		public :
+
+		union {
+
+			struct {
+
+				type x, y ,z, w;
+			};
+
+			struct {
+
+				type w, x, y, z;
+			} q;
+		};
+
+	};
+
+	typedef Vector<4,int32_t>	Vector4S;
+	typedef Vector<4,uint32_t>	Vector4U;
+	typedef Vector<4,float>		Vector4F;
+	typedef Vector<4,double>	Vector4D;
+
 	/* Matrix :
 	 *
 	 *		Matrix class template.
@@ -1409,6 +1437,21 @@ namespace zm {
 
 		type elm[4][4];
 	};
+
+	typedef Matrix<2,2,int32_t>		Matrix2x2S;
+	typedef Matrix<2,2,uint32_t>	Matrix2x2U;
+	typedef Matrix<2,2,float>		Matrix2x2F;
+	typedef Matrix<2,2,double>		Matrix2x2D;
+
+	typedef Matrix<3,3,int32_t>		Matrix3x3S;
+	typedef Matrix<3,3,uint32_t>	Matrix3x3U;
+	typedef Matrix<3,3,float>		Matrix3x3F;
+	typedef Matrix<3,3,double>		Matrix3x3D;
+
+	typedef Matrix<4,4,int32_t>		Matrix4x4S;
+	typedef Matrix<4,4,uint32_t>	Matrix4x4U;
+	typedef Matrix<4,4,float>		Matrix4x4F;
+	typedef Matrix<4,4,double>		Matrix4x4D;
 
 	template < typename type, typename enable = void > class Quad { };
 
