@@ -162,7 +162,7 @@ namespace zm {
 
 					SDL_Quit();
 
-					throw std::exception((std::string("glewInit failed : ") + std::string((char*)glewGetErrorString(glew_error))).c_str());
+					throw std::runtime_error((std::string("glewInit failed : ") + std::string((char*)glewGetErrorString(glew_error))).c_str());
 				}
 			}
 

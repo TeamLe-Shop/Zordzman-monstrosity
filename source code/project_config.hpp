@@ -5,6 +5,8 @@
 #ifndef _PROJECT_CONFIG_HPP_
 #define _PROJECT_CONFIG_HPP_
 
+#ifdef USE_WINDOWS
+
 /* disable few annoying warnings */
 #define _CRT_SECURE_NO_WARNINGS 1
 
@@ -38,5 +40,15 @@
 
 #define _THREAD_LOCAL_ __declspec(thread)
 #define _THREAD_ALLOC_ __declspec(thread)
+
+#elif defined USE_LINUX
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_net.h>
+#include <GL/glew.h>
+
+#define _GET_UTC_TIME_MS_ SDL_GetTicks()
+#endif
 
 #endif /* #ifndef _PROJECT_CONFIG_HPP_ */
