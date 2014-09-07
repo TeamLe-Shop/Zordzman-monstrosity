@@ -826,7 +826,18 @@ namespace zm {
 
 		/* vector axis */
 
-		type x, y, z;
+		union {
+
+			struct { 
+
+				type x, y, z;
+			};
+
+			struct {
+
+				type r, g, b;
+			};
+		};
 	};
 
 
@@ -1289,7 +1300,18 @@ namespace zm {
 
 		/* vector axis */
 
-		type x, y, z;
+		union {
+
+			struct { 
+
+				type x, y, z;
+			};
+
+			struct {
+
+				type r, g, b;
+			};
+		};
 	};
 
 	typedef Vector<3,int32_t>	Vector3S;
@@ -1306,6 +1328,11 @@ namespace zm {
 		public :
 
 		union {
+
+			struct {
+
+				type r, g ,b, a;
+			};
 
 			struct {
 
@@ -2024,9 +2051,9 @@ namespace zm {
 		_LIN_ALG_MATH_INLINE_ Quad (Vector<2,type> const a, Vector<2,type> const c) {
 
 			(this)->points[0] = a;
-			(this)->points[1] = Vector<2,type>(a.x,c.y);
+			(this)->points[1] = Vector<2,type>(c.x,a.y);
 			(this)->points[2] = c;
-			(this)->points[3] = Vector<2,type>(c.x,a.y);
+			(this)->points[3] = Vector<2,type>(a.x,c.y);
 		};
 
 		_LIN_ALG_MATH_INLINE_ Quad (Vector<2,type> const a, Vector<2,type> const b, Vector<2,type> const c, Vector<2,type> const d) {
@@ -2042,6 +2069,8 @@ namespace zm {
 			for(unsigned int i = 0; i < 4; i++)
 
 				(this)->points[i] = quad.points[i];
+
+			return (*this);
 		};
 
 		_LIN_ALG_MATH_INLINE_ Quad<type> operator + (Vector<2,type> const other) const {
@@ -2615,8 +2644,6 @@ namespace zm {
 		/* points */
 		Vector<2,type> points[4];
 	};
-
-	typedef Quad<float> Plane, Sprite;
 
 }; /* namespace zm */
 

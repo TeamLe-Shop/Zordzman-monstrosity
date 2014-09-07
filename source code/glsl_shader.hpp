@@ -69,7 +69,7 @@ namespace zm {
 
 			file.seekg(file.end);
 
-			uint32_t const size = file.tellg();
+			uint32_t const size = (uint32_t)file.tellg();
 
 			file.seekg(file.beg);
 
@@ -109,7 +109,7 @@ namespace zm {
 			return status == GL_TRUE ? 0 : ER_COMPILE;
 		};
 
-		std::string info () const {
+		std::string info ( ) const {
 
 			if(!(this)->is_shader())
 

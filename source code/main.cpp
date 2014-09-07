@@ -1,132 +1,76 @@
-#include "texture.hpp"
-#include "sprite.hpp"
-#include "animation.hpp"
-#include "lin_alg.hpp"
+#include "zm.hpp"
+#include <iostream>
 
-void draw ( zm::Plane const & plane, GLuint const & texture) {
+int32_t main_callback ( zm::Window * window, zm::Event const & event ) {
 
-	zm::bind_texture(texture);
+	if(event.type == SDL_WINDOWEVENT)
 
-	glBegin(GL_QUADS);
+		if(event.sdl_event.window.event == SDL_WINDOWEVENT_CLOSE)
 
-		glColor3f(1.0f,1.0f,1.0f);
+			zm::Application::destroy_window(window);
 
-		glTexCoord2f(0,0); glVertex2f(plane.points[0].x,plane.points[0].y);
-
-		glTexCoord2f(0,1); glVertex2f(plane.points[1].x,plane.points[1].y);
-
-		glTexCoord2f(1,1); glVertex2f(plane.points[2].x,plane.points[2].y);
-
-		glTexCoord2f(1,0); glVertex2f(plane.points[3].x,plane.points[3].y);
-
-	glEnd();
+	return 0;
 }
-
-void draw ( zm::Plane const & plane, zm::Sprite const & sprite, GLuint const & texture) {
-
-	zm::bind_texture(texture);
-
-	glBegin(GL_QUADS);
-
-		glColor3f(1.0f,1.0f,1.0f);
-
-		glTexCoord2f(sprite.points[0].u,sprite.points[0].v); glVertex2f(plane.points[0].x,plane.points[0].y);
-
-		glTexCoord2f(sprite.points[1].u,sprite.points[1].v); glVertex2f(plane.points[1].x,plane.points[1].y);
-
-		glTexCoord2f(sprite.points[2].u,sprite.points[2].v); glVertex2f(plane.points[2].x,plane.points[2].y);
-
-		glTexCoord2f(sprite.points[3].u,sprite.points[3].v); glVertex2f(plane.points[3].x,plane.points[3].y);
-
-	glEnd();
-}
-
-
 
 int main ( int argc, char ** argv ) {
 
-	SDL_Init(SDL_INIT_EVERYTHING);
+	zm::Application * application = nullptr;
 
-	if(TTF_Init() == -1)
+	try {
 
-		throw std::runtime_error("lel");
+		/* initialize application */
+		application = new zm::Application();
+	}
 
-	SDL_Window * window = SDL_CreateWindow("ZORDZMAN",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,800,600,SDL_WINDOW_OPENGL);
+	/* if initialization failed */
+	catch (std::exception & e) {
 
-	SDL_GLContext context = SDL_GL_CreateContext(window);
+		delete application;
 
-	SDL_GL_MakeCurrent(window,context);
+		application = nullptr;
 
-	glMatrixMode( GL_PROJECTION );
-    glLoadIdentity( );
+		throw std::runtime_error(e.what());
+	}
 
-	glOrtho(0,800,600,0,0,1.0);
+	zm::Window * main_window = nullptr;
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	try {
 
-	glClearColor(1,1,1,1);
+		/* might throw an exception when creating the very first window */
+		main_window = application->create_window("Monstrosity",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,1248,800,SDL_WINDOW_RESIZABLE,nullptr,main_callback);
+	}
 
-	glEnable(GL_TEXTURE_2D);
+	catch(std::exception & e) {
 
-	glDisable(GL_DEPTH_TEST);
+		throw std::runtime_error(e.what());
+	}
 
-	glEnable(GL_BLEND);
+	if(main_window == nullptr) {
 
-	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+		delete application;
 
-
-	GLuint tex = zm::load_texture("dude_animation_sheet-480x480.png");
-
-	zm::Plane plane(zm::Vector2F(200,200),zm::Vector2F(400,350));
+		return 0;
+	}
 
 	zm::Animation anim;
 
-	anim.is_looping = true;
-
-	anim.def_frame = 0;
+	anim.generate_frames(zm::Vector2U(480,480),zm::Vector2U(0,0),zm::Vector2U(61,70),zm::Vector2U(0,0),zm::Vector2U(7,4),27);
 
 	anim.run_time = 1000;
 
-	/* generate animation frames */
-	anim.generate_frames(zm::Vector2U(480,480),zm::Vector2U(0,0),zm::Vector2U(61,70),zm::Vector2U(0,0),zm::Vector2U(7,4),27);
+	/* lounch animation editor */
+	anim.edit(main_window);
 
-	anim.start();
+	zm::Event event;
 
-	anim.store("test.anim"); 
-	
-	anim.clean();
-	
-	anim.load("test.anim");
+	while(application->is_running()) {
 
-	SDL_Event event;
+		if(application->next_event(event))
 
-	bool application_is_running = true;
-
-	while(application_is_running) {
-
-		while(SDL_PollEvent(&event)) {
-
-			if(event.type == SDL_WINDOWEVENT) {
-
-				if(event.window.event == SDL_WINDOWEVENT_CLOSE) {
-
-					application_is_running = false;
-				}
-			}
-		}
-
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		draw(plane,anim.get_frame(),tex);
-
-		SDL_GL_SwapWindow(window);
+			application->process_event(event);
 	}
 
-	//GLEW_quit();
-	TTF_Quit();
-	IMG_Quit();
-	SDL_Quit();
+	delete application;
 
 	return 0;
 }

@@ -22,7 +22,7 @@ namespace zm {
 
 		operator bool () const { return (this)->is_program(); };
 
-		bool is_program () const { return glIsProgram((this)->program); };
+		bool is_program () const { return (bool)glIsProgram((this)->program); };
 
 		uint32_t create () {
 
